@@ -1,0 +1,17 @@
+﻿{
+    "decrypt_command":  "encryptly unpack diagnostic/build-201596cc.logd \u003coutdir\u003e --password bounty_todo_audit_2026",
+    "passed":  0,
+    "diagnostic_logd_error":  null,
+    "failed":  0,
+    "generated_at":  "2026-06-17T09:44:23.282499-06:00",
+    "chunk_size_bytes":  null,
+    "diagnostic_logd":  "diagnostic/build-201596cc.logd",
+    "pr_note":  "Include this JSON diagnostic report and diagnostic/build-201596cc.logd in your PR. Maintainers may ask you to remove these diagnostic artifacts before merging.",
+    "total_modules":  0,
+    "commit":  "201596cc",
+    "modules":  [
+
+                ],
+    "chunked":  false,
+    "password":  "bounty_todo_audit_2026"
+}
