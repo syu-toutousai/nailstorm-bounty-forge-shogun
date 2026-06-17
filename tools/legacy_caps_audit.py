@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Audit script enforcing uppercase LEGACY comment rule across the repository.
+"""
 """LEGACY uppercase enforcement audit script.
 
 Rule: Every file containing the word 'legacy' (case-insensitive)

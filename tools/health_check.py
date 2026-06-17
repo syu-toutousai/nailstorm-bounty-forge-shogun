@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Service health check utility for monitoring Tent of Trials endpoints.
+"""
 """
 Health check tool for the Tent of Trials platform.
 Performs comprehensive health checks across all services and reports

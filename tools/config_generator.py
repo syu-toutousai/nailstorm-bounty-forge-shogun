@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Generates configuration files from templates and environment variables.
+"""
 """
 Configuration file generator for the Tent of Trials platform.
 Generates configuration files for different environments from templates.

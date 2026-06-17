@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Legacy migration orchestrator for transforming old data formats and schemas.
+"""
 """
 Legacy data migration tool for Tent of Trials.
 

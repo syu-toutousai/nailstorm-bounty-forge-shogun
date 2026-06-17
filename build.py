@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-
+"""Multi-language build system for Tent of Trials.
+`nHandles build orchestration across Rust, TypeScript, Go, C, C++, Java,
+Ruby, Lua, and Haskell modules with encrypted diagnostic logging.
+"""
 import argparse
 import datetime
 import getpass

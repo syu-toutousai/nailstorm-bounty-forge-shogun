@@ -1,3 +1,5 @@
+"""Imports existing cloud resources into Terraform state for infrastructure-as-code management.
+"""
 # LEGACY: this file contains legacy references
 #!/usr/bin/env python3
 """

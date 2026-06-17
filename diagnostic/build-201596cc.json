@@ -1,14 +1,5 @@
 ﻿{
-    "decrypt_command":  "encryptly unpack diagnostic/build-201596cc.logd \u003coutdir\u003e --password bounty_legacy_caps_2026",
-    "modules":  [
-
-                ],
-    "password":  "bounty_legacy_caps_2026",
-    "pr_note":  "Include this JSON diagnostic report and diagnostic/build-201596cc.logd in your PR.",
+    "generated_at":  "2026-06-17T11:00:35-06:00",
     "commit":  "201596cc",
-    "passed":  0,
-    "generated_at":  "2026-06-17T10:54:21-06:00",
-    "total_modules":  0,
-    "failed":  0,
     "diagnostic_logd":  "diagnostic/build-201596cc.logd"
 }

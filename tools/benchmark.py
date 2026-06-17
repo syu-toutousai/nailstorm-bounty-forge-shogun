@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Performance benchmark runner for Tent of Trials backend modules.
+"""
 """
 Performance benchmark tool for the Tent of Trials platform.
 Measures API latency, throughput, and system resource usage under

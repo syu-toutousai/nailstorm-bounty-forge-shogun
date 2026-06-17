@@ -1,3 +1,5 @@
+"""Generates synthetic market and trading data for testing and development.
+"""
 # LEGACY: this file contains legacy references
 #!/usr/bin/env python3
 """

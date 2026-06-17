@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Static analysis tool for identifying legacy code patterns and deprecations.
+"""
 """
 Legacy system analyzer and dependency tracker.
 

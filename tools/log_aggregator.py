@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Log aggregation tool that collects and parses build and runtime logs.
+"""
 """
 Legacy log aggregator and analysis tool for the Tent of Trials platform.
 

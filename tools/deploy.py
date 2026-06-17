@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Deployment script for pushing builds to staging and production environments.
+"""
 """
 Legacy deployment script for the Tent of Trials platform.
 

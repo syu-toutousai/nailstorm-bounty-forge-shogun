@@ -1,3 +1,5 @@
+"""Database migration tool supporting versioned schema changes and rollbacks.
+"""
 # LEGACY: this file contains legacy references
 #!/usr/bin/env python3
 """

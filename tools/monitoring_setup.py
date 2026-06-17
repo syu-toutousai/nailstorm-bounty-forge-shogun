@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Configures monitoring dashboards and alerting for Tent of Trials services.
+"""
 """
 Monitoring setup and configuration tool for the Tent of Trials platform.
 Configures Prometheus, Grafana, Alertmanager, and related monitoring

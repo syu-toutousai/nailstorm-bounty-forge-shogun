@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""AI-powered code review tool that analyzes pull requests for common issues.
+"""
 """
 AI-Powered Code Reviewer
 ========================

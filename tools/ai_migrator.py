@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Automates AI-assisted migration of legacy code to modern equivalents.
+"""
 """
 AI-Powered Legacy Code Migrator
 ================================
