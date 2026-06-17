@@ -52,6 +52,7 @@ pub mod schema_versions {
 /// Field order matters for Avro serialization. Do not reorder fields
 /// without updating the schema registry definitions.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct EventEnvelope {
     /// Unique event identifier (UUID v7 for time-ordered IDs)
     pub event_id: Uuid,
@@ -86,6 +87,7 @@ pub struct EventEnvelope {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct EventMetadata {
     /// Trace ID for distributed tracing
     pub trace_id: Uuid,
@@ -116,6 +118,7 @@ pub struct EventMetadata {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct EventRetention {
     /// How long to retain this event (in days)
     pub retention_days: u32,
@@ -128,6 +131,7 @@ pub struct EventRetention {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum StorageTier {
     Hot,
     Warm,
@@ -140,7 +144,7 @@ pub enum StorageTier {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "event_type", content = "data")]
+#[serde(tag = "event_type", content = "data", rename_all = "snake_case")]
 pub enum EventPayload {
     // User events
     UserCreated(UserCreated),
@@ -257,6 +261,7 @@ pub enum EventPayload {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserCreated {
     pub user_id: Uuid,
     pub email: String,
@@ -270,6 +275,7 @@ pub struct UserCreated {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserUpdated {
     pub user_id: Uuid,
     pub changed_fields: Vec<String>,
@@ -278,6 +284,7 @@ pub struct UserUpdated {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserDeleted {
     pub user_id: Uuid,
     pub reason: Option<String>,
@@ -287,6 +294,7 @@ pub struct UserDeleted {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserLoggedIn {
     pub user_id: Uuid,
     pub login_method: String,
@@ -297,6 +305,7 @@ pub struct UserLoggedIn {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserLoggedOut {
     pub user_id: Uuid,
     pub session_id: Option<Uuid>,
@@ -304,6 +313,7 @@ pub struct UserLoggedOut {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserPasswordChanged {
     pub user_id: Uuid,
     pub changed_via_reset: bool,
@@ -311,6 +321,7 @@ pub struct UserPasswordChanged {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserPasswordReset {
     pub user_id: Uuid,
     pub reset_method: String,
@@ -318,6 +329,7 @@ pub struct UserPasswordReset {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserEmailVerified {
     pub user_id: Uuid,
     pub email: String,
@@ -325,6 +337,7 @@ pub struct UserEmailVerified {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserMFAEnabled {
     pub user_id: Uuid,
     pub mfa_type: String,
@@ -332,18 +345,21 @@ pub struct UserMFAEnabled {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserMFADisabled {
     pub user_id: Uuid,
     pub reason: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserMFARecoveryUsed {
     pub user_id: Uuid,
     pub remaining_codes: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserPermissionsChanged {
     pub user_id: Uuid,
     pub added_permissions: Vec<String>,
@@ -352,6 +368,7 @@ pub struct UserPermissionsChanged {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserRoleChanged {
     pub user_id: Uuid,
     pub previous_role: String,
@@ -360,6 +377,7 @@ pub struct UserRoleChanged {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserSuspended {
     pub user_id: Uuid,
     pub reason: String,
@@ -368,6 +386,7 @@ pub struct UserSuspended {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserReactivated {
     pub user_id: Uuid,
     pub reactivated_by: Uuid,
@@ -379,6 +398,7 @@ pub struct UserReactivated {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderCreated {
     pub order_id: Uuid,
     pub user_id: Uuid,
@@ -394,12 +414,14 @@ pub struct OrderCreated {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderUpdated {
     pub order_id: Uuid,
     pub changed_fields: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderCancelled {
     pub order_id: Uuid,
     pub cancelled_by: String,
@@ -408,6 +430,7 @@ pub struct OrderCancelled {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderFilled {
     pub order_id: Uuid,
     pub fill_price: f64,
@@ -420,6 +443,7 @@ pub struct OrderFilled {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderPartiallyFilled {
     pub order_id: Uuid,
     pub fill_price: f64,
@@ -431,6 +455,7 @@ pub struct OrderPartiallyFilled {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderRejected {
     pub order_id: Uuid,
     pub reason: String,
@@ -438,6 +463,7 @@ pub struct OrderRejected {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderExpired {
     pub order_id: Uuid,
     pub unfilled_quantity: f64,
@@ -445,6 +471,7 @@ pub struct OrderExpired {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderAmended {
     pub order_id: Uuid,
     pub previous_quantity: f64,
@@ -454,12 +481,14 @@ pub struct OrderAmended {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderSuspended {
     pub order_id: Uuid,
     pub reason: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct OrderResumed {
     pub order_id: Uuid,
 }
@@ -469,6 +498,7 @@ pub struct OrderResumed {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct TradeExecuted {
     pub trade_id: Uuid,
     pub buy_order_id: Uuid,
@@ -488,6 +518,7 @@ pub struct TradeExecuted {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct TradeSettled {
     pub trade_id: Uuid,
     pub settlement_time: DateTime<Utc>,
@@ -495,6 +526,7 @@ pub struct TradeSettled {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct TradeFailed {
     pub trade_id: Uuid,
     pub reason: String,
@@ -503,6 +535,7 @@ pub struct TradeFailed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct TradeDisputed {
     pub trade_id: Uuid,
     pub disputing_user_id: Uuid,
@@ -511,6 +544,7 @@ pub struct TradeDisputed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct TradeResolved {
     pub trade_id: Uuid,
     pub resolution: String,
@@ -518,6 +552,7 @@ pub struct TradeResolved {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct TradeRollback {
     pub trade_id: Uuid,
     pub reason: String,
@@ -529,6 +564,7 @@ pub struct TradeRollback {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountCreated {
     pub account_id: Uuid,
     pub user_id: Uuid,
@@ -538,12 +574,14 @@ pub struct AccountCreated {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountUpdated {
     pub account_id: Uuid,
     pub changed_fields: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountClosed {
     pub account_id: Uuid,
     pub reason: String,
@@ -552,6 +590,7 @@ pub struct AccountClosed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountFrozen {
     pub account_id: Uuid,
     pub reason: String,
@@ -559,6 +598,7 @@ pub struct AccountFrozen {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountUnfrozen {
     pub account_id: Uuid,
     pub reason: String,
@@ -566,6 +606,7 @@ pub struct AccountUnfrozen {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountDeposit {
     pub account_id: Uuid,
     pub amount: f64,
@@ -576,6 +617,7 @@ pub struct AccountDeposit {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountWithdrawal {
     pub account_id: Uuid,
     pub amount: f64,
@@ -587,6 +629,7 @@ pub struct AccountWithdrawal {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountTransfer {
     pub from_account_id: Uuid,
     pub to_account_id: Uuid,
@@ -597,6 +640,7 @@ pub struct AccountTransfer {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountBalanceChanged {
     pub account_id: Uuid,
     pub previous_balance: f64,
@@ -607,6 +651,7 @@ pub struct AccountBalanceChanged {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountMarginCalled {
     pub account_id: Uuid,
     pub margin_requirement: f64,
@@ -617,6 +662,7 @@ pub struct AccountMarginCalled {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccountLiquidated {
     pub account_id: Uuid,
     pub liquidation_reason: String,
@@ -630,6 +676,7 @@ pub struct AccountLiquidated {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct InstrumentAdded {
     pub instrument_id: String,
     pub symbol: String,
@@ -641,12 +688,14 @@ pub struct InstrumentAdded {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct InstrumentUpdated {
     pub instrument_id: String,
     pub changed_fields: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct InstrumentRemoved {
     pub instrument_id: String,
     pub reason: String,
@@ -654,6 +703,7 @@ pub struct InstrumentRemoved {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct MarketOpened {
     pub exchange: String,
     pub open_time: DateTime<Utc>,
@@ -661,6 +711,7 @@ pub struct MarketOpened {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct MarketClosed {
     pub exchange: String,
     pub close_time: DateTime<Utc>,
@@ -668,6 +719,7 @@ pub struct MarketClosed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct MarketHalted {
     pub exchange: String,
     pub instrument_id: Option<String>,
@@ -676,6 +728,7 @@ pub struct MarketHalted {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct MarketResumed {
     pub exchange: String,
     pub instrument_id: Option<String>,
@@ -683,6 +736,7 @@ pub struct MarketResumed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct CircuitBreakerTriggered {
     pub exchange: String,
     pub trigger_level: String,
@@ -691,6 +745,7 @@ pub struct CircuitBreakerTriggered {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct PriceFeedUpdated {
     pub instrument_id: String,
     pub source: String,
@@ -702,6 +757,7 @@ pub struct PriceFeedUpdated {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct PriceFeedError {
     pub instrument_id: String,
     pub source: String,
@@ -714,6 +770,7 @@ pub struct PriceFeedError {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ComplianceCheckPassed {
     pub check_id: Uuid,
     pub user_id: Uuid,
@@ -722,6 +779,7 @@ pub struct ComplianceCheckPassed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ComplianceCheckFailed {
     pub check_id: Uuid,
     pub user_id: Uuid,
@@ -732,6 +790,7 @@ pub struct ComplianceCheckFailed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ComplianceReviewRequired {
     pub review_id: Uuid,
     pub user_id: Uuid,
@@ -741,6 +800,7 @@ pub struct ComplianceReviewRequired {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ComplianceViolation {
     pub violation_id: Uuid,
     pub user_id: Uuid,
@@ -752,6 +812,7 @@ pub struct ComplianceViolation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ComplianceReportGenerated {
     pub report_id: Uuid,
     pub report_type: String,
@@ -766,6 +827,7 @@ pub struct ComplianceReportGenerated {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ServiceStarted {
     pub service_name: String,
     pub version: String,
@@ -775,6 +837,7 @@ pub struct ServiceStarted {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ServiceStopped {
     pub service_name: String,
     pub reason: String,
@@ -782,6 +845,7 @@ pub struct ServiceStopped {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ServiceHealthChanged {
     pub service_name: String,
     pub previous_status: String,
@@ -790,6 +854,7 @@ pub struct ServiceHealthChanged {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ConfigChanged {
     pub service_name: String,
     pub config_key: String,
@@ -799,6 +864,7 @@ pub struct ConfigChanged {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct DeploymentStarted {
     pub deployment_id: Uuid,
     pub service_name: String,
@@ -808,6 +874,7 @@ pub struct DeploymentStarted {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct DeploymentCompleted {
     pub deployment_id: Uuid,
     pub service_name: String,
@@ -817,6 +884,7 @@ pub struct DeploymentCompleted {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct DeploymentFailed {
     pub deployment_id: Uuid,
     pub service_name: String,
@@ -826,6 +894,7 @@ pub struct DeploymentFailed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct BackupCompleted {
     pub backup_id: Uuid,
     pub backup_type: String,
@@ -835,6 +904,7 @@ pub struct BackupCompleted {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct BackupFailed {
     pub backup_id: Uuid,
     pub backup_type: String,
@@ -842,6 +912,7 @@ pub struct BackupFailed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct MaintenanceStarted {
     pub maintenance_id: Uuid,
     pub service_name: String,
@@ -850,6 +921,7 @@ pub struct MaintenanceStarted {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct MaintenanceCompleted {
     pub maintenance_id: Uuid,
     pub service_name: String,
@@ -861,6 +933,7 @@ pub struct MaintenanceCompleted {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AuditTrailEntry {
     pub audit_id: Uuid,
     pub user_id: Option<Uuid>,
@@ -872,6 +945,7 @@ pub struct AuditTrailEntry {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct DataAccessAudit {
     pub audit_id: Uuid,
     pub user_id: Uuid,
@@ -883,6 +957,7 @@ pub struct DataAccessAudit {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct PermissionChangeAudit {
     pub audit_id: Uuid,
     pub target_user_id: Uuid,
@@ -891,6 +966,7 @@ pub struct PermissionChangeAudit {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ConfigChangeAudit {
     pub audit_id: Uuid,
     pub service_name: String,
@@ -901,6 +977,7 @@ pub struct ConfigChangeAudit {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct SecurityEvent {
     pub event_id: Uuid,
     pub event_type: String,
@@ -916,6 +993,7 @@ pub struct SecurityEvent {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct NotificationSent {
     pub notification_id: Uuid,
     pub user_id: Uuid,
@@ -925,6 +1003,7 @@ pub struct NotificationSent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct NotificationDelivered {
     pub notification_id: Uuid,
     pub user_id: Uuid,
@@ -934,6 +1013,7 @@ pub struct NotificationDelivered {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct NotificationFailed {
     pub notification_id: Uuid,
     pub user_id: Uuid,
@@ -943,6 +1023,7 @@ pub struct NotificationFailed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct NotificationBounced {
     pub notification_id: Uuid,
     pub user_id: Uuid,
@@ -953,6 +1034,7 @@ pub struct NotificationBounced {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct NotificationClicked {
     pub notification_id: Uuid,
     pub user_id: Uuid,
@@ -966,6 +1048,7 @@ pub struct NotificationClicked {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct PageView {
     pub page_id: String,
     pub user_id: Option<Uuid>,
@@ -980,6 +1063,7 @@ pub struct PageView {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct FeatureUsed {
     pub user_id: Option<Uuid>,
     pub feature_name: String,
@@ -988,6 +1072,7 @@ pub struct FeatureUsed {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ErrorOccurred {
     pub error_id: Uuid,
     pub user_id: Option<Uuid>,
@@ -999,6 +1084,7 @@ pub struct ErrorOccurred {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct PerformanceMetric {
     pub metric_name: String,
     pub metric_value: f64,
@@ -1007,6 +1093,7 @@ pub struct PerformanceMetric {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct UserFeedback {
     pub feedback_id: Uuid,
     pub user_id: Option<Uuid>,
@@ -1017,6 +1104,7 @@ pub struct UserFeedback {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ABTestAssignment {
     pub user_id: Uuid,
     pub experiment_id: String,
@@ -1025,6 +1113,7 @@ pub struct ABTestAssignment {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ABTestConversion {
     pub user_id: Uuid,
     pub experiment_id: String,

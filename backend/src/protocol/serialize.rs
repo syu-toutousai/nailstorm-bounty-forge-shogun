@@ -45,6 +45,7 @@ use super::{ProtocolError, MAX_MESSAGE_SIZE};
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum EncodingFormat {
     Json = 0,
     MessagePack = 1,

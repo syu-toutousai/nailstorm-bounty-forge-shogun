@@ -45,6 +45,7 @@ pub const DEFAULT_TIMEOUT_MS: u64 = 30000;
 
 /// Protocol-level error codes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ProtocolError {
     Unknown = 0,
     InvalidMessage = 1,
@@ -101,6 +102,7 @@ pub mod capabilities {
 
 /// Protocol version negotiation result.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct VersionNegotiation {
     pub client_version: u32,
     pub server_version: u32,
