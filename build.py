@@ -167,6 +167,8 @@ MODULES = [
     ),
 ]
 
+MODULE_TIMINGS: list[dict] = []
+
 ENCRYPTLY_DIR = ROOT / "tools" / "encryptly"
 ENCRYPTLY_BINARIES = {
     "linux-x64": ENCRYPTLY_DIR / "linux-x64" / "encryptly",
@@ -505,6 +507,22 @@ def build_diagnostic_report(
     if logd_relpaths and len(logd_relpaths) > 1:
         decrypt_target = str((DIAGNOSTIC_DIR / f"build-{commit_id}.logd").relative_to(ROOT))
 
+    # Build module_timings from results
+    module_timings = []
+    for name, success, elapsed, output, binary in results:
+        module = next((m for m in MODULES if m.name == name), None)
+        if module:
+            module_timings.append({
+                "module": name,
+                "language": module.language,
+                "command": ' '.join(module.build_cmd),
+                "started_at": None,  # Would need to track in build_module
+                "finished_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "elapsed_seconds": round(elapsed, 3),
+                "exit_code": 0 if success else 1,
+                "status": "PASS" if success else "FAIL",
+            })
+
     report = {
         "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "commit": commit_id,
@@ -521,6 +539,7 @@ def build_diagnostic_report(
         "total_modules": len(results),
         "passed": sum(1 for _, s, _, _, _ in results if s),
         "failed": sum(1 for _, s, _, _, _ in results if not s),
+        "module_timings": module_timings,
         "modules": [
             {
                 "name": name,
@@ -851,6 +870,10 @@ Diagnostic bundle:
         "--list-modules", action="store_true",
         help="List available modules with details and exit",
     )
+    parser.add_argument(
+        "--timings-json",
+        help="Write timing data to specified JSON file",
+    )
 
     args = parser.parse_args()
 
@@ -956,6 +979,33 @@ Diagnostic bundle:
         results.append((module.name, success, elapsed, output, binary))
 
     print_summary(results)
+
+    # Print timing summary
+    if results:
+        print(f"\n  {color('Timing Summary (slowest first):', Colors.BOLD)}")
+        sorted_results = sorted(results, key=lambda x: x[2], reverse=True)
+        for name, success, elapsed, output, binary in sorted_results[:5]:
+            status_color = Colors.GREEN if success else Colors.RED
+            print(f"    {color(name, Colors.CYAN)}: {color(f'{elapsed:.1f}s', status_color)}")
+
+    # Write timings JSON if requested
+    if args.timings_json:
+        timings_path = Path(args.timings_json)
+        timings_path.parent.mkdir(parents=True, exist_ok=True)
+        module_timings_data = []
+        for name, success, elapsed, output, binary in results:
+            module = next((m for m in MODULES if m.name == name), None)
+            if module:
+                module_timings_data.append({
+                    "module": name,
+                    "language": module.language,
+                    "command": ' '.join(module.build_cmd),
+                    "elapsed_seconds": round(elapsed, 3),
+                    "exit_code": 0 if success else 1,
+                    "status": "PASS" if success else "FAIL",
+                })
+        timings_path.write_text(json.dumps(module_timings_data, indent=2) + "\n", encoding="utf-8")
+        print(f"    {color('->', Colors.GREEN)} Timings written to {timings_path}")
 
     diagnostics_ok = generate_logd(results, args.verbose)
 
