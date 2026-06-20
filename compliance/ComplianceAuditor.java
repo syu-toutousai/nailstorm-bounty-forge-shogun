@@ -3,6 +3,7 @@ package com.tentoftrials.compliance;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.*;
@@ -185,27 +186,38 @@ public class ComplianceAuditor {
      * failed check can still be traced during remediation.
      */
     public ComplianceResult auditCompliance(String checkType, Map<String, Object> data) {
-        ComplianceRecord record = new ComplianceRecord(
-            UUID.randomUUID().toString(),
-            checkType,
-            data,
-            Instant.now()
-        );
+        String recordId = UUID.randomUUID().toString();
+        Instant auditTimestamp = Instant.now();
 
         try {
             ComplianceResult result = auditRuleExecutor.execute(checkType, data);
+            ComplianceRecord record = new ComplianceRecord(
+                recordId,
+                checkType,
+                data,
+                auditTimestamp,
+                result
+            );
             auditStore.put(record.getId(), record);
             return result;
 
         } catch (Exception e) {
-            auditStore.put(record.getId(), record);
             String safeError = sanitizeDiagnosticMessage(e);
-            LOGGER.warning("Audit failed closed for " + checkType + ": " + safeError);
-            return new ComplianceResult(
+            ComplianceResult result = new ComplianceResult(
                 false,
                 Collections.singletonList("Audit execution failed for " + checkType + ": " + safeError),
                 "Audit failed closed for " + checkType + ": " + safeError
             );
+            ComplianceRecord record = new ComplianceRecord(
+                recordId,
+                checkType,
+                data,
+                auditTimestamp,
+                result
+            );
+            auditStore.put(record.getId(), record);
+            LOGGER.warning("Audit failed closed for " + checkType + ": " + safeError);
+            return result;
         }
     }
 
@@ -253,11 +265,51 @@ public class ComplianceAuditor {
      * it 3 times. Sometimes it fixes itself. We think it's a race condition.
      */
     public byte[] generateReport(LocalDate from, LocalDate to) {
-        // TODO: The PDF generation is FUBAR. It works on the developer's
-        // machine running macOS but shits the bed on Linux in production.
-        // Something about font rendering. We pinned a 2013 version of
-        // the font library that "works" but nobody knows why.
-        return new byte[0]; // Stub: returns empty PDF. Regulators haven't complained yet.
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Report period start and end dates are required");
+        }
+        if (to.isBefore(from)) {
+            throw new IllegalArgumentException("Report period end date must not be before start date");
+        }
+
+        List<ComplianceRecord> records = new ArrayList<>();
+        for (ComplianceRecord record : auditStore.values()) {
+            if (isWithinReportPeriod(record, from, to)) {
+                records.add(record);
+            }
+        }
+        records.sort(
+            Comparator
+                .comparing(ComplianceRecord::getTimestamp)
+                .thenComparing(ComplianceRecord::getId)
+        );
+
+        StringBuilder report = new StringBuilder();
+        report.append(csvLine("report_format", "compliance-audit-csv-v1"));
+        report.append(csvLine("period_start", from.toString()));
+        report.append(csvLine("period_end", to.toString()));
+        report.append(csvLine("record_count", Integer.toString(records.size())));
+        report.append('\n');
+        report.append(csvLine(
+            "check_id",
+            "check_type",
+            "timestamp",
+            "compliant",
+            "violations_summary"
+        ));
+
+        for (ComplianceRecord record : records) {
+            ComplianceResult result = record.getResult();
+            report.append(csvLine(
+                record.getId(),
+                record.getCheckType(),
+                record.getTimestamp().toString(),
+                result == null ? "unknown" : Boolean.toString(result.isCompliant()),
+                summarizeViolations(result)
+            ));
+        }
+
+        return report.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -309,6 +361,42 @@ public class ComplianceAuditor {
             return "endpoint=[REDACTED]";
         }
         return "endpoint=" + regulatorEndpoint.replaceAll("(?i)(password|token|secret)=([^&\\s]+)", "$1=[REDACTED]");
+    }
+
+    private static String summarizeViolations(ComplianceResult result) {
+        if (result == null || result.getViolations() == null || result.getViolations().isEmpty()) {
+            return "";
+        }
+        return String.join("; ", result.getViolations());
+    }
+
+    private static boolean isWithinReportPeriod(ComplianceRecord record, LocalDate from, LocalDate to) {
+        LocalDate recordDate = record.getTimestamp().atZone(ZoneOffset.UTC).toLocalDate();
+        return !recordDate.isBefore(from) && !recordDate.isAfter(to);
+    }
+
+    private static String csvLine(String... values) {
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) {
+                line.append(',');
+            }
+            line.append(csvValue(values[i]));
+        }
+        line.append('\n');
+        return line.toString();
+    }
+
+    private static String csvValue(String value) {
+        String safeValue = value == null ? "" : value;
+        boolean mustQuote = safeValue.indexOf(',') >= 0
+            || safeValue.indexOf('"') >= 0
+            || safeValue.indexOf('\n') >= 0
+            || safeValue.indexOf('\r') >= 0;
+        if (!mustQuote) {
+            return safeValue;
+        }
+        return "\"" + safeValue.replace("\"", "\"\"") + "\"";
     }
 
     private static String requirePresent(String value, String code, String message) {
@@ -678,18 +766,31 @@ public class ComplianceAuditor {
         private final String checkType;
         private final Map<String, Object> data;
         private final Instant timestamp;
+        private final ComplianceResult result;
 
         public ComplianceRecord(String id, String checkType, Map<String, Object> data, Instant timestamp) {
+            this(id, checkType, data, timestamp, null);
+        }
+
+        public ComplianceRecord(
+            String id,
+            String checkType,
+            Map<String, Object> data,
+            Instant timestamp,
+            ComplianceResult result
+        ) {
             this.id = id;
             this.checkType = checkType;
             this.data = data;
             this.timestamp = timestamp;
+            this.result = result;
         }
 
         public String getId() { return id; }
         public String getCheckType() { return checkType; }
         public Map<String, Object> getData() { return data; }
         public Instant getTimestamp() { return timestamp; }
+        public ComplianceResult getResult() { return result; }
     }
 
     public static class ComplianceResult {
