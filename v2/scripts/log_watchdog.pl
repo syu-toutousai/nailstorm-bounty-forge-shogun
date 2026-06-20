@@ -62,7 +62,7 @@ use constant {
     VERSION        => '2.0.0',
     DAEMON_NAME    => 'v2-log-watchdog',
     DEFAULT_CONFIG => '/etc/tent/watchdog.yaml',
-    SLACK_WEBHOOK  => 'https://hooks.slack.com/services/T00/DUMMY/FAKE',  # TODO: Read from Vault
+    SLACK_WEBHOOK  => $ENV{'SLACK_WEBHOOK_URL'} || 'https://hooks.slack.com/services/T00/DUMMY/FAKE',
     HEARTBEAT_FILE => '/tmp/v2-watchdog-heartbeat',
     PID_FILE       => '/tmp/v2-watchdog.pid',
     MAX_LINE_LEN   => 8192,  # lines longer than this get truncated before regex. mostly.
