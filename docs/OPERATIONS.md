@@ -229,6 +229,25 @@ Current resource utilization (as of last review):
 | Requests/sec | > 80% of capacity | < 30% of capacity |
 | Queue depth | > 1000 for 5 minutes | < 100 for 15 minutes |
 
+### Benchmark Rate-Limit Bypass Marker
+
+The legacy benchmark tool can mark synthetic load-test requests with an
+explicit bypass header:
+
+```bash
+python3 tools/benchmark.py --bypass-rate-limit --endpoint http://localhost:8080/health latency --requests 100
+```
+
+When enabled, every benchmark request includes:
+
+```text
+X-Benchmark-Bypass-Rate-Limit: true
+```
+
+This flag is opt-in and disabled by default. It does not disable server-side
+rate limiting by itself; the target environment must explicitly allow this
+header for trusted benchmark traffic before operators rely on bypassed results.
+
 ### Projected Growth
 
 Based on current trends:
