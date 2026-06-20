@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "verify:orderbook": "node scripts/verify-orderbook-virtualization.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
