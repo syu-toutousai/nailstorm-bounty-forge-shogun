@@ -49,10 +49,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"math"
-	"regexp"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 )
@@ -63,15 +60,15 @@ import (
 
 // RegulatoryFramework represents a set of compliance rules from a regulator.
 type RegulatoryFramework struct {
-	ID             string          `json:"id"`
-	Name           string          `json:"name"`
-	Jurisdiction   Jurisdiction    `json:"jurisdiction"`
-	Version        string          `json:"version"`
-	EffectiveDate  time.Time       `json:"effective_date"`
-	Rules          []ComplianceRule `json:"rules"`
-	ReportingReqs  []ReportingRequirement `json:"reporting_requirements"`
-	PositionLimits []PositionLimit `json:"position_limits"`
-	RestrictedAssets []string      `json:"restricted_assets"`
+	ID               string                 `json:"id"`
+	Name             string                 `json:"name"`
+	Jurisdiction     Jurisdiction           `json:"jurisdiction"`
+	Version          string                 `json:"version"`
+	EffectiveDate    time.Time              `json:"effective_date"`
+	Rules            []ComplianceRule       `json:"rules"`
+	ReportingReqs    []ReportingRequirement `json:"reporting_requirements"`
+	PositionLimits   []PositionLimit        `json:"position_limits"`
+	RestrictedAssets []string               `json:"restricted_assets"`
 }
 
 // Jurisdiction represents a regulatory jurisdiction.
@@ -96,56 +93,59 @@ const (
 
 // ComplianceRule is a single regulatory requirement.
 type ComplianceRule struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	Category    RuleCategory      `json:"category"`
-	Severity    RuleSeverity      `json:"severity"`
-	Action      RuleAction        `json:"action"`
-	Condition   string            `json:"condition"`
+	ID          string                 `json:"id"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Category    RuleCategory           `json:"category"`
+	Severity    RuleSeverity           `json:"severity"`
+	Action      RuleAction             `json:"action"`
+	Condition   string                 `json:"condition"`
 	Parameters  map[string]interface{} `json:"parameters"`
 }
 
 type RuleCategory string
+
 const (
-	RuleCategoryKYC           RuleCategory = "kyc"
-	RuleCategoryAML           RuleCategory = "aml"
-	RuleCategoryPositionLimit RuleCategory = "position_limit"
-	RuleCategoryMargin        RuleCategory = "margin"
-	RuleCategoryDayTrading    RuleCategory = "day_trading"
-	RuleCategoryReporting     RuleCategory = "reporting"
-	RuleCategoryMarketAbuse   RuleCategory = "market_abuse"
-	RuleCategoryInsiderTrading RuleCategory = "insider_trading"
-	RuleCategorySettlement    RuleCategory = "settlement"
-	RuleCategoryDisclosure    RuleCategory = "disclosure"
-	RuleCategoryRecordKeeping RuleCategory = "record_keeping"
-	RuleCategoryDataProtection RuleCategory = "data_protection"
+	RuleCategoryKYC               RuleCategory = "kyc"
+	RuleCategoryAML               RuleCategory = "aml"
+	RuleCategoryPositionLimit     RuleCategory = "position_limit"
+	RuleCategoryMargin            RuleCategory = "margin"
+	RuleCategoryDayTrading        RuleCategory = "day_trading"
+	RuleCategoryReporting         RuleCategory = "reporting"
+	RuleCategoryMarketAbuse       RuleCategory = "market_abuse"
+	RuleCategoryInsiderTrading    RuleCategory = "insider_trading"
+	RuleCategorySettlement        RuleCategory = "settlement"
+	RuleCategoryDisclosure        RuleCategory = "disclosure"
+	RuleCategoryRecordKeeping     RuleCategory = "record_keeping"
+	RuleCategoryDataProtection    RuleCategory = "data_protection"
 	RuleCategoryConductOfBusiness RuleCategory = "conduct_of_business"
-	RuleCategoryClientMoney    RuleCategory = "client_money"
-	RuleCategoryCapitalAdequacy RuleCategory = "capital_adequacy"
-	RuleCategoryStressTesting  RuleCategory = "stress_testing"
-	RuleCategoryGovernance     RuleCategory = "governance"
-	RuleCategoryRemuneration   RuleCategory = "remuneration"
-	RuleCategoryRiskManagement RuleCategory = "risk_management"
+	RuleCategoryClientMoney       RuleCategory = "client_money"
+	RuleCategoryCapitalAdequacy   RuleCategory = "capital_adequacy"
+	RuleCategoryStressTesting     RuleCategory = "stress_testing"
+	RuleCategoryGovernance        RuleCategory = "governance"
+	RuleCategoryRemuneration      RuleCategory = "remuneration"
+	RuleCategoryRiskManagement    RuleCategory = "risk_management"
 )
 
 type RuleSeverity string
+
 const (
-	RuleSeverityLow       RuleSeverity = "low"
-	RuleSeverityMedium    RuleSeverity = "medium"
-	RuleSeverityHigh      RuleSeverity = "high"
-	RuleSeverityCritical  RuleSeverity = "critical"
+	RuleSeverityLow      RuleSeverity = "low"
+	RuleSeverityMedium   RuleSeverity = "medium"
+	RuleSeverityHigh     RuleSeverity = "high"
+	RuleSeverityCritical RuleSeverity = "critical"
 )
 
 type RuleAction string
+
 const (
-	RuleActionAllow    RuleAction = "allow"
-	RuleActionWarn     RuleAction = "warn"
-	RuleActionBlock    RuleAction = "block"
-	RuleActionReview   RuleAction = "review"
-	RuleActionEscalate RuleAction = "escalate"
-	RuleActionReport   RuleAction = "report"
-	RuleActionFreeze   RuleAction = "freeze"
+	RuleActionAllow     RuleAction = "allow"
+	RuleActionWarn      RuleAction = "warn"
+	RuleActionBlock     RuleAction = "block"
+	RuleActionReview    RuleAction = "review"
+	RuleActionEscalate  RuleAction = "escalate"
+	RuleActionReport    RuleAction = "report"
+	RuleActionFreeze    RuleAction = "freeze"
 	RuleActionLiquidate RuleAction = "liquidate"
 )
 
@@ -163,10 +163,11 @@ type ReportingRequirement struct {
 }
 
 type ReportFrequency string
+
 const (
-	ReportFrequencyDaily   ReportFrequency = "daily"
-	ReportFrequencyWeekly  ReportFrequency = "weekly"
-	ReportFrequencyMonthly ReportFrequency = "monthly"
+	ReportFrequencyDaily     ReportFrequency = "daily"
+	ReportFrequencyWeekly    ReportFrequency = "weekly"
+	ReportFrequencyMonthly   ReportFrequency = "monthly"
 	ReportFrequencyQuarterly ReportFrequency = "quarterly"
 	ReportFrequencyAnnually  ReportFrequency = "annually"
 	ReportFrequencyAdHoc     ReportFrequency = "ad_hoc"
@@ -177,14 +178,14 @@ const (
 
 // PositionLimit defines maximum position sizes for instruments.
 type PositionLimit struct {
-	ID             string  `json:"id"`
-	InstrumentType string  `json:"instrument_type"`
-	MaxNetPosition float64 `json:"max_net_position"`
+	ID               string  `json:"id"`
+	InstrumentType   string  `json:"instrument_type"`
+	MaxNetPosition   float64 `json:"max_net_position"`
 	MaxGrossPosition float64 `json:"max_gross_position"`
-	MaxOrderSize   float64 `json:"max_order_size"`
-	Period         string  `json:"period,omitempty"`
-	Aggregation    string  `json:"aggregation,omitempty"`
-	Notes          string  `json:"notes,omitempty"`
+	MaxOrderSize     float64 `json:"max_order_size"`
+	Period           string  `json:"period,omitempty"`
+	Aggregation      string  `json:"aggregation,omitempty"`
+	Notes            string  `json:"notes,omitempty"`
 }
 
 // ---------------------------------------------------------------------------
@@ -198,11 +199,11 @@ type PositionLimit struct {
 // checked transactions to avoid redundant KYC/AML checks. Results expire
 // after cacheTTL, which defaults to 5 minutes.
 type RuleEngine struct {
-	mu             sync.RWMutex
-	frameworks     []*RegulatoryFramework
-	cache          map[string]cacheEntry
-	cacheTTL       time.Duration
-	auditLog       []AuditEntry
+	mu              sync.RWMutex
+	frameworks      []*RegulatoryFramework
+	cache           map[string]cacheEntry
+	cacheTTL        time.Duration
+	auditLog        []AuditEntry
 	maxAuditEntries int
 }
 
@@ -213,52 +214,52 @@ type cacheEntry struct {
 
 // RuleContext provides context for rule evaluation.
 type RuleContext struct {
-	UserID        string            `json:"user_id"`
-	AccountID     string            `json:"account_id"`
-	Jurisdictions []Jurisdiction    `json:"jurisdictions"`
-	UserTier      string            `json:"user_tier"`
-	InstrumentID  string            `json:"instrument_id"`
-	Side          string            `json:"side"`
-	OrderType     string            `json:"order_type"`
-	Quantity      float64           `json:"quantity"`
-	Price         float64           `json:"price"`
-	TotalValue    float64           `json:"total_value"`
-	CurrentPosition float64         `json:"current_position"`
-	DailyVolume   float64           `json:"daily_volume"`
-	MonthlyVolume float64           `json:"monthly_volume"`
-	IsDayTrade    bool              `json:"is_day_trade"`
-	IsPatternDayTrader bool         `json:"is_pattern_day_trader"`
-	TimeSinceLastTrade string       `json:"time_since_last_trade"`
-	CountryOfResidence string       `json:"country_of_residence"`
-	IsPEP         bool              `json:"is_pep"`
-	RiskScore     float64           `json:"risk_score"`
-	KYCStatus     string            `json:"kyc_status"`
-	AMLStatus     string            `json:"aml_status"`
-	IsWhitelisted bool              `json:"is_whitelisted"`
-	IsBlacklisted bool              `json:"is_blacklisted"`
+	UserID             string         `json:"user_id"`
+	AccountID          string         `json:"account_id"`
+	Jurisdictions      []Jurisdiction `json:"jurisdictions"`
+	UserTier           string         `json:"user_tier"`
+	InstrumentID       string         `json:"instrument_id"`
+	Side               string         `json:"side"`
+	OrderType          string         `json:"order_type"`
+	Quantity           float64        `json:"quantity"`
+	Price              float64        `json:"price"`
+	TotalValue         float64        `json:"total_value"`
+	CurrentPosition    float64        `json:"current_position"`
+	DailyVolume        float64        `json:"daily_volume"`
+	MonthlyVolume      float64        `json:"monthly_volume"`
+	IsDayTrade         bool           `json:"is_day_trade"`
+	IsPatternDayTrader bool           `json:"is_pattern_day_trader"`
+	TimeSinceLastTrade string         `json:"time_since_last_trade"`
+	CountryOfResidence string         `json:"country_of_residence"`
+	IsPEP              bool           `json:"is_pep"`
+	RiskScore          float64        `json:"risk_score"`
+	KYCStatus          string         `json:"kyc_status"`
+	AMLStatus          string         `json:"aml_status"`
+	IsWhitelisted      bool           `json:"is_whitelisted"`
+	IsBlacklisted      bool           `json:"is_blacklisted"`
 }
 
 // RuleResult represents the outcome of a rule evaluation.
 type RuleResult struct {
-	Passed     bool              `json:"passed"`
-	Action     RuleAction        `json:"action"`
-	RuleID     string            `json:"rule_id"`
-	RuleName   string            `json:"rule_name"`
-	Message    string            `json:"message"`
-	Severity   RuleSeverity      `json:"severity"`
-	Timestamp  time.Time         `json:"timestamp"`
-	Metadata   map[string]interface{} `json:"metadata,omitempty"`
+	Passed    bool                   `json:"passed"`
+	Action    RuleAction             `json:"action"`
+	RuleID    string                 `json:"rule_id"`
+	RuleName  string                 `json:"rule_name"`
+	Message   string                 `json:"message"`
+	Severity  RuleSeverity           `json:"severity"`
+	Timestamp time.Time              `json:"timestamp"`
+	Metadata  map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // AuditEntry represents a compliance audit log entry.
 type AuditEntry struct {
-	Timestamp time.Time       `json:"timestamp"`
-	UserID    string          `json:"user_id"`
-	Action    string          `json:"action"`
-	RuleID    string          `json:"rule_id"`
-	Result    *RuleResult     `json:"result"`
-	Context   *RuleContext    `json:"context"`
-	RequestID string          `json:"request_id,omitempty"`
+	Timestamp time.Time    `json:"timestamp"`
+	UserID    string       `json:"user_id"`
+	Action    string       `json:"action"`
+	RuleID    string       `json:"rule_id"`
+	Result    *RuleResult  `json:"result"`
+	Context   *RuleContext `json:"context"`
+	RequestID string       `json:"request_id,omitempty"`
 }
 
 func NewRuleEngine() *RuleEngine {
@@ -433,11 +434,11 @@ func (re *RuleEngine) evaluateAML(ctx *RuleContext) *RuleResult {
 func (re *RuleEngine) evaluatePositionLimit(rule ComplianceRule, ctx *RuleContext) *RuleResult {
 	if ctx.CurrentPosition+ctx.Quantity > rule.Parameters["max_position"].(float64) {
 		return &RuleResult{
-			Passed:    false,
-			Action:    RuleActionBlock,
-			RuleID:    rule.ID,
-			RuleName:  rule.Name,
-			Message:   fmt.Sprintf("Position limit exceeded. Current: %.2f, Order: %.2f, Max: %.2f",
+			Passed:   false,
+			Action:   RuleActionBlock,
+			RuleID:   rule.ID,
+			RuleName: rule.Name,
+			Message: fmt.Sprintf("Position limit exceeded. Current: %.2f, Order: %.2f, Max: %.2f",
 				ctx.CurrentPosition, ctx.Quantity, rule.Parameters["max_position"]),
 			Severity:  RuleSeverityHigh,
 			Timestamp: time.Now(),
@@ -452,11 +453,11 @@ func (re *RuleEngine) evaluateMargin(rule ComplianceRule, ctx *RuleContext) *Rul
 	requiredMargin := ctx.TotalValue * marginReq
 	if requiredMargin > availableMargin {
 		return &RuleResult{
-			Passed:    false,
-			Action:    RuleActionBlock,
-			RuleID:    rule.ID,
-			RuleName:  rule.Name,
-			Message:   fmt.Sprintf("Insufficient margin. Required: %.2f, Available: %.2f",
+			Passed:   false,
+			Action:   RuleActionBlock,
+			RuleID:   rule.ID,
+			RuleName: rule.Name,
+			Message: fmt.Sprintf("Insufficient margin. Required: %.2f, Available: %.2f",
 				requiredMargin, availableMargin),
 			Severity:  RuleSeverityHigh,
 			Timestamp: time.Now(),
@@ -626,11 +627,16 @@ func (re *RuleEngine) logAudit(ctx *RuleContext, result *RuleResult) {
 
 func severityWeight(s RuleSeverity) int {
 	switch s {
-	case RuleSeverityLow: return 1
-	case RuleSeverityMedium: return 2
-	case RuleSeverityHigh: return 3
-	case RuleSeverityCritical: return 4
-	default: return 0
+	case RuleSeverityLow:
+		return 1
+	case RuleSeverityMedium:
+		return 2
+	case RuleSeverityHigh:
+		return 3
+	case RuleSeverityCritical:
+		return 4
+	default:
+		return 0
 	}
 }
 
@@ -643,23 +649,23 @@ func loadDefaultFrameworks() []*RegulatoryFramework {
 			Rules: []ComplianceRule{
 				{ID: "SEC-001", Name: "Pattern Day Trader Rule",
 					Description: "Limits day trades for pattern day traders",
-					Category: RuleCategoryDayTrading, Severity: RuleSeverityHigh,
+					Category:    RuleCategoryDayTrading, Severity: RuleSeverityHigh,
 					Action: RuleActionBlock},
 				{ID: "SEC-002", Name: "Short Sale Rule",
 					Description: "Regulates short selling conditions",
-					Category: RuleCategoryMarketAbuse, Severity: RuleSeverityMedium,
+					Category:    RuleCategoryMarketAbuse, Severity: RuleSeverityMedium,
 					Action: RuleActionReview},
 				{ID: "SEC-003", Name: "Large Trader Reporting",
 					Description: "Reporting requirements for large traders",
-					Category: RuleCategoryReporting, Severity: RuleSeverityMedium,
+					Category:    RuleCategoryReporting, Severity: RuleSeverityMedium,
 					Action: RuleActionReport},
 				{ID: "SEC-004", Name: "Market Access Rule",
 					Description: "Risk controls for market access",
-					Category: RuleCategoryRiskManagement, Severity: RuleSeverityCritical,
+					Category:    RuleCategoryRiskManagement, Severity: RuleSeverityCritical,
 					Action: RuleActionBlock},
 				{ID: "SEC-005", Name: "Best Execution",
 					Description: "Requires brokers to seek best execution",
-					Category: RuleCategoryConductOfBusiness, Severity: RuleSeverityMedium,
+					Category:    RuleCategoryConductOfBusiness, Severity: RuleSeverityMedium,
 					Action: RuleActionReview},
 			},
 			PositionLimits: []PositionLimit{
@@ -674,23 +680,23 @@ func loadDefaultFrameworks() []*RegulatoryFramework {
 			Rules: []ComplianceRule{
 				{ID: "MIFID-001", Name: "Transaction Reporting",
 					Description: "Requires transaction reporting within T+1",
-					Category: RuleCategoryReporting, Severity: RuleSeverityHigh,
+					Category:    RuleCategoryReporting, Severity: RuleSeverityHigh,
 					Action: RuleActionReport},
 				{ID: "MIFID-002", Name: "Best Execution Reporting",
 					Description: "Requires best execution data publication",
-					Category: RuleCategoryReporting, Severity: RuleSeverityMedium,
+					Category:    RuleCategoryReporting, Severity: RuleSeverityMedium,
 					Action: RuleActionReport},
 				{ID: "MIFID-003", Name: "Pre-trade Transparency",
 					Description: "Pre-trade transparency requirements",
-					Category: RuleCategoryDisclosure, Severity: RuleSeverityHigh,
+					Category:    RuleCategoryDisclosure, Severity: RuleSeverityHigh,
 					Action: RuleActionBlock},
 				{ID: "MIFID-004", Name: "Post-trade Transparency",
 					Description: "Post-trade transparency requirements",
-					Category: RuleCategoryDisclosure, Severity: RuleSeverityMedium,
+					Category:    RuleCategoryDisclosure, Severity: RuleSeverityMedium,
 					Action: RuleActionReport},
 				{ID: "MIFID-005", Name: "Algorithmic Trading",
 					Description: "Requirements for algorithmic trading systems",
-					Category: RuleCategoryGovernance, Severity: RuleSeverityCritical,
+					Category:    RuleCategoryGovernance, Severity: RuleSeverityCritical,
 					Action: RuleActionReview},
 			},
 		},
@@ -701,11 +707,11 @@ func loadDefaultFrameworks() []*RegulatoryFramework {
 			Rules: []ComplianceRule{
 				{ID: "EMIR-001", Name: "Derivative Reporting",
 					Description: "Reporting of all derivative transactions",
-					Category: RuleCategoryReporting, Severity: RuleSeverityCritical,
+					Category:    RuleCategoryReporting, Severity: RuleSeverityCritical,
 					Action: RuleActionReport},
 				{ID: "EMIR-002", Name: "Clearing Obligation",
 					Description: "Clearing obligation for standard derivatives",
-					Category: RuleCategorySettlement, Severity: RuleSeverityCritical,
+					Category:    RuleCategorySettlement, Severity: RuleSeverityCritical,
 					Action: RuleActionBlock},
 			},
 		},
@@ -716,11 +722,11 @@ func loadDefaultFrameworks() []*RegulatoryFramework {
 			Rules: []ComplianceRule{
 				{ID: "FCA-001", Name: "Client Asset Rules (CASS)",
 					Description: "Requirements for client money and assets",
-					Category: RuleCategoryClientMoney, Severity: RuleSeverityCritical,
+					Category:    RuleCategoryClientMoney, Severity: RuleSeverityCritical,
 					Action: RuleActionFreeze},
 				{ID: "FCA-002", Name: "Conduct of Business Rules",
 					Description: "COBS rules for client communications",
-					Category: RuleCategoryConductOfBusiness, Severity: RuleSeverityHigh,
+					Category:    RuleCategoryConductOfBusiness, Severity: RuleSeverityHigh,
 					Action: RuleActionReview},
 			},
 		},
@@ -731,15 +737,15 @@ func loadDefaultFrameworks() []*RegulatoryFramework {
 			Rules: []ComplianceRule{
 				{ID: "GDPR-001", Name: "Data Retention",
 					Description: "Personal data retention limits",
-					Category: RuleCategoryDataProtection, Severity: RuleSeverityHigh,
+					Category:    RuleCategoryDataProtection, Severity: RuleSeverityHigh,
 					Action: RuleActionBlock},
 				{ID: "GDPR-002", Name: "Right to Erasure",
 					Description: "GDPR right to be forgotten",
-					Category: RuleCategoryDataProtection, Severity: RuleSeverityHigh,
+					Category:    RuleCategoryDataProtection, Severity: RuleSeverityHigh,
 					Action: RuleActionReview},
 				{ID: "GDPR-003", Name: "Data Breach Notification",
 					Description: "72-hour data breach notification requirement",
-					Category: RuleCategoryDataProtection, Severity: RuleSeverityCritical,
+					Category:    RuleCategoryDataProtection, Severity: RuleSeverityCritical,
 					Action: RuleActionReport},
 			},
 		},
@@ -765,20 +771,20 @@ func ValidateTrade(ctx *RuleContext, engine *RuleEngine) (*RuleResult, error) {
 // TODO: Add support for XML and CSV report formats.
 func GenerateComplianceReport(jurisdiction Jurisdiction, start, end time.Time) ([]byte, error) {
 	report := map[string]interface{}{
-		"jurisdiction":   jurisdiction,
-		"report_period":  fmt.Sprintf("%s to %s", start.Format(time.RFC3339), end.Format(time.RFC3339)),
-		"generated_at":   time.Now().UTC().Format(time.RFC3339),
-		"generated_by":   "compliance-engine",
-		"version":        "3.0.0",
-		"total_audits":   0,
-		"violations":     []interface{}{},
-		"warnings":       []interface{}{},
+		"jurisdiction":  jurisdiction,
+		"report_period": fmt.Sprintf("%s to %s", start.Format(time.RFC3339), end.Format(time.RFC3339)),
+		"generated_at":  time.Now().UTC().Format(time.RFC3339),
+		"generated_by":  "compliance-engine",
+		"version":       "3.0.0",
+		"total_audits":  0,
+		"violations":    []interface{}{},
+		"warnings":      []interface{}{},
 		"summary": map[string]interface{}{
-			"total_trades":      0,
-			"blocked_trades":    0,
-			"flagged_trades":    0,
-			"approved_trades":   0,
-			"pending_review":    0,
+			"total_trades":    0,
+			"blocked_trades":  0,
+			"flagged_trades":  0,
+			"approved_trades": 0,
+			"pending_review":  0,
 		},
 		"notes": []string{
 			"This report was auto-generated by the compliance engine.",
