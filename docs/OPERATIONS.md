@@ -310,3 +310,55 @@ Audit logs are retained for 365 days and include:
 2. Update Kubernetes secret: `kubectl create secret tls tot-tls --cert=new.crt --key=new.key -n tent-production --dry-run=client -o yaml | kubectl apply -f -`
 3. Restart services: `kubectl rollout restart deployment -n tent-production`
 4. Verify new certificate: `openssl s_client -connect api.example.com:443 -servername api.example.com`
+
+## Log Watchdog Exit-Code Contract
+
+The v2 log watchdog (`v2/scripts/log_watchdog.pl`) supports a `--scan`
+mode that reads one or more log files once, matches patterns, and exits
+with a code reflecting the worst severity found.
+
+### Exit Codes
+
+| Exit Code | Condition |
+|-----------|-----------|
+| 0 | No error/critical patterns, or `--no-fail` flag is set |
+| 1 | Error or critical severity patterns matched |
+| 2 | Usage error (e.g., `--scan` without file arguments) |
+
+### Scan Mode Options
+
+| Flag | Description |
+|------|-------------|
+| `--scan` | One-shot scan mode: read files and exit (no daemon) |
+| `--no-fail` | Always exit 0, even when error/critical patterns match |
+| `--verbose` | Print each pattern match during scan |
+
+### Usage Examples
+
+```bash
+# Scan a single log file
+perl v2/scripts/log_watchdog.pl --scan /var/log/tent/backend.log
+
+# Scan multiple files
+perl v2/scripts/log_watchdog.pl --scan backend.log market.log
+
+# Scan but always exit 0 (useful in CI for reporting without failing)
+perl v2/scripts/log_watchdog.pl --scan --no-fail backend.log
+
+# Verbose scan for debugging
+perl v2/scripts/log_watchdog.pl --scan --verbose backend.log
+```
+
+### Running the Tests
+
+```bash
+perl v2/tests/test_watchdog_exitcodes.pl
+```
+
+The test suite uses three fixture files in `v2/tests/fixtures/`:
+
+| Fixture | Content | Expected Exit |
+|---------|---------|---------------|
+| `clean.log` | INFO lines only | 0 |
+| `warning_only.log` | WARN + INFO lines | 0 |
+| `error.log` | ERROR + CRITICAL lines | 1 (0 with `--no-fail`) |
